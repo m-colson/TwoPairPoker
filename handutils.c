@@ -45,7 +45,7 @@ void replaceCard(card **hand, card** deck, int pos) {
  * @param hand the hand to test
  * @return char if cards are flush returns the suit type otherwise 0
  */
-char isFlush(card *hand) {
+char hasFlush(card *hand) {
     char cmpFace=hand->face;
 
     for(int i=1; i<5; i++) {
@@ -56,18 +56,69 @@ char isFlush(card *hand) {
     return cmpFace;
 }
 
-int isStraight(card *hand) {
-    
+void generateCounts(card *hand, int counts[13]) {
+    for(int i=0; i<13; i++) counts[i]=0;
+
+    while(hand!=NULL) {
+        counts[hand->value-1]++;
+        hand=hand->next;
+    }
 }
 
-int isThreeOfKind(card *hand) {
+int hasStraight(int counts[13]) {
+    int consecCounter=0;
+    for(int i=0; i<13; i++) {
+        if(consecCounter==5) return i;
+        if(counts[i]) {
+            consecCounter++;
+        } else {
+            consecCounter=0;
+        }
+    }
 
+    return 0;
 }
 
-int isTwoPair(card *hand) {
+int hasThreeOfKind(int counts[13]) {
+    for(int i=0; i<13; i++)
+        if(counts[i]==3) return i+1;
 
+    return 0;
 }
 
-int isFullHouse(card* hand) {
+int hasFourOfKind(int counts[13]) {
+    for(int i=0; i<13; i++)
+        if(counts[i]==4) return i+1;
 
+    return 0;
+}
+
+int hasTwoPair(int counts[13]) {
+    int valueOf2first=0;
+    int valueOf2second=0;
+
+    for(int i=0; i<13; i++)
+        if(valueOf2first) {
+            valueOf2second=i+1;
+        } else {
+            valueOf2first=i+1;
+        }
+
+    if(valueOf2first&&valueOf2second) return 1;
+
+    return 0;
+}
+
+int hasFullHouse(int counts[13]) {
+    int valueOf3=0;
+    int valueOf2=0;
+
+    for(int i=0; i<13; i++) {
+        if(counts[i]==3) valueOf3=i+1;
+        if(counts[i]==2) valueOf2=i+1;
+    }
+
+    if(valueOf2&&valueOf3) return 1;
+
+    return 0;
 }
