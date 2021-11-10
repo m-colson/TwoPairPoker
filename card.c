@@ -23,6 +23,10 @@ void card_destroy(card* n) {
     free(n);
 }
 
+void card_print(card* c) {
+    printf("%d%c ",c->value,c->face);
+}
+
 card* cardList_unshift(card* head, card* new) {
     new->next=head;
     return new;
@@ -68,7 +72,7 @@ int cardList_length(card* list) {
 
 void cardList_print(card* list) {
     while(list!=NULL) {
-        printf("%d%c ",list->value,list->face);
+        card_print(list);
         list=list->next;
     }
     printf("\n");
