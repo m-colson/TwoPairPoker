@@ -57,6 +57,11 @@ void card_print(card* c) {
     
 }
 
+card *cardList_get(card* head, int num) {
+    for(int i=0; i<num; i++) head=head->next;
+    return head;
+}
+
 void cardList_unshift(card** head, card* new) {
     new->next=*head;
     *head=new;
@@ -69,14 +74,14 @@ card* cardList_shift(card** head) {
 }
 
 void cardList_insertAfter(card* head, card* new, int pos) {
-    for(int i=0; i<pos; i++) head=head->next;
+    head=cardList_get(head,pos);
 
     new->next=head->next;
     head->next=new;
 }
 
-card* cardList_deleteAfter(card* head, int pos) {
-    for(int i=0; i<pos; i++) head=head->next;
+card* cardList_removeAfter(card* head, int pos) {
+    head=cardList_get(head,pos);
 
     card* output=head->next;
     head->next=head->next->next;
@@ -113,7 +118,7 @@ void cardList_shuffle(card** head, int iters) {
     int head_length=cardList_length(*head);
     for(int i=0; i<iters; i++) {
         int randNum=randBetween(0,head_length-1);
-        cardList_unshift(head,cardList_deleteAfter(*head,randNum));
+        cardList_unshift(head,cardList_removeAfter(*head,randNum));
     }
 }
 
