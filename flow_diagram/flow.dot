@@ -1,0 +1,65 @@
+digraph {
+
+    main -> player;
+    main -> card;
+    main -> cardList;
+
+    subgraph cluster_card {
+		node [style=filled];
+        card -> card_struct;
+        card -> card_create;
+        card -> card_destroy;
+
+        cardList -> cardList_get -> card;
+        cardList -> cardList_unshift -> card ;
+        cardList -> cardList_shift -> card;
+        cardList -> cardList_insertAfter -> card;
+        cardList -> cardList_removeAfter -> card;
+        cardList -> cardList_last -> card;
+        cardList -> cardLust_length -> card;
+        cardList -> cardList_shuffle -> card;
+        cardList -> cardList_concat -> card;
+
+		label ="card.c";
+		color=blue;
+	}
+
+    subgraph cluster_player {
+		node [style=filled];
+        player -> Player_struct;
+        Player_struct -> card_struct;
+        player -> Player_printMoney;
+        player -> Player_queryBet;
+        player -> Player_printHand;
+        player -> Player_printHandLarge;
+        player -> Player_printHandLarge;
+        player -> Player_queryAndReplaceCards;
+        player -> Player_updateMoneyAndPrint;
+		label ="player.c";
+		color=blue;
+	}
+
+    subgraph cluster_handutils {
+		node [style=filled];
+        dealCards -> card;
+        replaceCard -> card;
+        hasFlush -> card;
+        generateCounts -> card;
+        hasStraight -> generateCounts;
+        hasThreeOfKind -> generateCounts;
+        hasFourOfKind -> generateCounts;
+        hasTwoPair -> generateCounts;
+        hasFullHouse -> generateCounts;
+
+        getHandType -> hasFlush;
+        getHandType -> hasStraight;
+        getHandType -> hasThreeOfKind;
+        getHandType -> hasFourOfKind;
+        getHandType -> hasTwoPair;
+        getHandType -> hasFullHouse;
+
+		label ="handutils.c";
+		color=blue;
+	}
+
+}
