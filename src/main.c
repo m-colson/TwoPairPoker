@@ -14,9 +14,8 @@ int main(int argc, char** argv) {
     card* deck=NULL;
     card* discardPile=NULL;
 
-    for(int i=0; i<52; i++) {
+    for(int i=0; i<52; i++)
         cardList_unshift(&deck,card_create(i));
-    }
 
     if(argc<2) srand(time(0));
     else srand(atoi(argv[1]));
@@ -62,9 +61,14 @@ int main(int argc, char** argv) {
         printf("\t\t%d*bet\n",rankRewards[i]);
     }
 
-    printf("\n\n\n");
+    printf("\n");
 
     while(player->money>0) {
+        if(cardList_length(deck)<=5) {
+            cardList_shuffle(&discardPile,10000);
+            cardList_concat(&deck,discardPile);
+        }
+
         Player_printMoney(player);
         printf("\n");
 
