@@ -1,9 +1,13 @@
 CC=gcc
 CFLAGS=-Wall
 
-build: *.c
-	$(CC) $(CFLAGS) -o main.exe main.c
+build: src/*.c
+	$(CC) $(CFLAGS) -o 'build/main.exe' 'src/main.c'
 
-test: *.test.c
+run: src/*.c
+	$(CC) $(CFLAGS) -o 'build/main.exe' 'src/main.c'
+	./build/main
+
+test: tests/*.test.c
 	$(CC) $(CFLAGS) -o test.exe handutils.test.c
 	./test
