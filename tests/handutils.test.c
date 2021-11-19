@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "handutils.c"
+#include "../src/handutils.c"
 
 #define assert(c,msg) if(!(c)) {printf(msg" failed\n");exit(EXIT_FAILURE);} else {printf(msg" passed\n");}
  

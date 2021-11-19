@@ -10,7 +10,7 @@
  */
 void dealCards(card** hand, card** deck, int num) {
     for(int i=0; i<num; i++) 
-        *hand=cardList_unshift(*hand,cardList_shift(deck));
+        cardList_unshift(hand,cardList_shift(deck));
 }
 
 /**
@@ -43,7 +43,7 @@ void replaceCard(card **hand, card** deck, int pos) {
  * @brief Tests the first 5 cards of a card list for a flush
  * 
  * @param hand the hand to test
- * @return char if cards are flush returns the suit type otherwise 0
+ * @return suit type if cards are flush otherwise 0
  */
 char hasFlush(card *hand) {
     char cmpFace=hand->face;
@@ -67,13 +67,13 @@ void generateCounts(card *hand, int counts[13]) {
 
 int hasStraight(int counts[13]) {
     int consecCounter=0;
-    for(int i=0; i<13; i++) {
-        if(consecCounter==5) return i;
-        if(counts[i]) {
+    for(int i=0; i<14; i++) {
+        if(counts[i%13]) {
             consecCounter++;
         } else {
             consecCounter=0;
         }
+        if(consecCounter==5) return i+1;
     }
 
     return 0;
@@ -97,12 +97,15 @@ int hasTwoPair(int counts[13]) {
     int valueOf2first=0;
     int valueOf2second=0;
 
-    for(int i=0; i<13; i++)
-        if(valueOf2first) {
-            valueOf2second=i+1;
-        } else {
-            valueOf2first=i+1;
+    for(int i=0; i<13; i++) {
+        if(counts[i]==2) {
+            if(valueOf2first) {
+                valueOf2second=i+1;
+            } else {
+                valueOf2first=i+1;
+            }
         }
+    }
 
     if(valueOf2first&&valueOf2second) return 1;
 
@@ -122,3 +125,59 @@ int hasFullHouse(int counts[13]) {
 
     return 0;
 }
+
+const char* rankNames[]={
+    "None",
+    "Two Pair",
+    "Tree of a Kind",
+    "Straight",
+    "Flush",
+    "Full House",
+    "Four of a Kind",
+    "Straight Flush",
+    "Royal Flush"
+};
+
+const char* rankExamples[]={
+    " ",
+    "K♠ K♦ 6♦ 6♥  ■ ",
+    "9♠ 9♣ 9♦  ■  ■ ",
+    "4■ 5■ 6■ 7■ 8■ ",
+    "■♣ ■♣ ■♣ ■♣ ■♣ ",
+    "9♦ 9♥ 9♠ 3♣ 3♥ ",
+    "9♠ 9♣ 9♦ 9♥ ■  ",
+    "2♣ 3♣ 4♣ 5♣ 6♣ ",
+    "10♠ J♠ Q♠ K♠ A♠"
+};
+
+const int rankRewards[]={
+    -1,
+    2,
+    4,
+    5,
+    10,
+    25,
+    50,
+    100,
+    250
+};
+
+
+int getHandType(card* hand) {
+    int counts[13];
+    generateCounts(hand,counts);
+
+    int flushValue=hasFlush(hand);
+    int straightValue=hasStraight(counts);
+
+    if(straightValue==14 && flushValue) return 8;
+    if(straightValue && flushValue) return 7;
+    if(hasFourOfKind(counts)) return 6;
+    if(hasFullHouse(counts)) return 5;
+    if(flushValue) return 4;
+    if(straightValue) return 3;
+    if(hasThreeOfKind(counts)) return 2;
+    if(hasTwoPair(counts)) return 1;
+    return 0;
+}
+

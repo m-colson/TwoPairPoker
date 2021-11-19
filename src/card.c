@@ -24,12 +24,42 @@ void card_destroy(card* n) {
 }
 
 void card_print(card* c) {
-    printf("%d%c ",c->value,c->face);
+    switch(c->value) {
+        case 13:
+            printf("K");
+            break;
+        case 12:
+            printf("Q");
+            break;
+        case 11:
+            printf("J");
+            break;
+        default:
+            printf("%d",c->value);
+            break;
+    }
+    switch(c->face) {
+        #ifdef SUITS
+            case 's': printf("♠"); break;
+            case 'c': printf("♣"); break;
+            case 'h': printf("♥"); break;
+            case 'd': printf("♦"); break;
+        #else
+            case 's': printf("s"); break;
+            case 'c': printf("c"); break;
+            case 'h': printf("h"); break;
+            case 'd': printf("d"); break;
+        #endif
+        default:
+            fprintf(stderr,"Invalid card face\n");
+            exit(EXIT_FAILURE);
+    }
+    
 }
 
-card* cardList_unshift(card* head, card* new) {
-    new->next=head;
-    return new;
+void cardList_unshift(card** head, card* new) {
+    new->next=*head;
+    *head=new;
 }
 
 card* cardList_shift(card** head) {
@@ -73,21 +103,24 @@ int cardList_length(card* list) {
 void cardList_print(card* list) {
     while(list!=NULL) {
         card_print(list);
+        printf(" ");
         list=list->next;
     }
     printf("\n");
 }
 
-void cardList_push(card* head,card *new) {
-    card* last=cardList_last(head);
-    last->next=new;
-}
-
-card* cardList_shuffle(card* head, int iters) {
-    int head_length=cardList_length(head);
+void cardList_shuffle(card** head, int iters) {
+    int head_length=cardList_length(*head);
     for(int i=0; i<iters; i++) {
         int randNum=randBetween(0,head_length-1);
-        head=cardList_unshift(head,cardList_deleteAfter(head,randNum));
+        cardList_unshift(head,cardList_deleteAfter(*head,randNum));
     }
-    return head;
+}
+
+void cardList_concat(card** head, card* tail) {
+    if(*head==NULL) {
+        *head=tail;
+    } else {
+        cardList_last(*head)->next=tail;
+    }
 }
