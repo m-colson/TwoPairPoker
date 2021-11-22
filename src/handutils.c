@@ -20,7 +20,7 @@ void dealCards(card** hand, card** deck, int num) {
  * @param **deck deck to draw from
  * @param pos zero indexed position to replace
  */
-void replaceCard(card **hand, card** deck, int pos) {
+void replaceCard(card **hand, card** deck, card** discardPile,int pos) {
     card* prevCard=NULL;
     card* oldCard=*hand;
     for(int i=0; i<pos; i++) {
@@ -31,6 +31,8 @@ void replaceCard(card **hand, card** deck, int pos) {
     card* newCard=cardList_shift(deck);
 
     newCard->next=oldCard->next;
+    
+    cardList_unshift(discardPile,oldCard);
     
     if(pos==0) {
         *hand=newCard;
