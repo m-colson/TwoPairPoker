@@ -1,41 +1,21 @@
 digraph {
-
-    main -> player;
-    main -> card;
-    main -> cardList;
-
     subgraph cluster_card {
 		node [style=filled];
-        card -> card_struct;
-        card -> card_create;
-        card -> card_destroy;
+        card_struct;
+        card_create;
+        card_destroy;
 
-        cardList -> cardList_get -> card;
-        cardList -> cardList_unshift -> card ;
-        cardList -> cardList_shift -> card;
-        cardList -> cardList_insertAfter -> card;
-        cardList -> cardList_removeAfter -> card;
-        cardList -> cardList_last -> card;
-        cardList -> cardLust_length -> card;
-        cardList -> cardList_shuffle -> card;
-        cardList -> cardList_concat -> card;
+        cardList_get -> card_struct;
+        cardList_unshift -> card_struct ;
+        cardList_shift -> card_struct;
+        cardList_insertAfter -> card_struct;
+        cardList_removeAfter -> card_struct;
+        cardList_last -> card_struct;
+        cardList_length -> card_struct;
+        cardList_shuffle -> card_struct;
+        cardList_concat -> card_struct;
 
 		label ="card.c";
-		color=blue;
-	}
-
-    subgraph cluster_player {
-		node [style=filled];
-        player -> Player_struct;
-        Player_struct -> card_struct;
-        player -> Player_printMoney;
-        player -> Player_queryBet;
-        player -> Player_printHand;
-        player -> Player_printHandLarge;
-        player -> Player_printHandLarge;
-        player -> Player_queryAndReplaceCards;
-        player -> Player_updateMoneyAndPrint;
-		label ="player.c";
 		color=blue;
 	}
 
@@ -61,5 +41,51 @@ digraph {
 		label ="handutils.c";
 		color=blue;
 	}
+
+    subgraph cluster_utils {
+		node [style=filled];
+        randBetween;
+        scanLine;
+        printRepeat;
+        printRepeatGroup;
+
+		label ="utils.c";
+		color=blue;
+	}
+
+    
+    subgraph cluster_player {
+		node [style=filled];
+        Player_struct-> card_struct;
+        Player_create -> Player_struct;
+        Player_destroy;
+        Player_printMoney;
+        Player_queryBet;
+        Player_printHand -> getHandType;
+        Player_printHandLarge -> getHandType;
+        Player_queryAndReplaceCards;
+        Player_updateMoneyAndPrint;
+		label ="player.c";
+		color=blue;
+	}
+
+
+    main -> card_create;
+    main -> card_struct;
+    main -> cardList_unshift;
+    main -> cardList_shuffle;
+    main -> scanLine;
+    main -> Player_struct;
+    main -> Player_create;
+    main -> printRepeatGroup;
+    main -> printRepeat;
+    main -> cardList_length;
+    main -> Player_printMoney;
+    main -> Player_queryBet;
+    main -> Player_printHandLarge;
+    main -> Player_queryAndReplaceCards;
+    main -> Player_updateMoneyAndPrint;
+    main -> cardList_concat;
+    main -> Player_destroy;
 
 }
