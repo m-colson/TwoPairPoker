@@ -54,7 +54,15 @@ void card_print(card* c) {
             fprintf(stderr,"Invalid card face\n");
             exit(EXIT_FAILURE);
     }
-    
+}
+
+void cardList_teardown(card *head) {
+    card *next;
+    while(head!=NULL) {
+        next=head->next;
+        card_destroy(head);
+        head=next;
+    }
 }
 
 card *cardList_get(card* head, int num) {
@@ -71,13 +79,6 @@ card* cardList_shift(card** head) {
     card* output=*head;
     *head=(*head)->next;
     return output;
-}
-
-void cardList_insertAfter(card* head, card* new, int pos) {
-    head=cardList_get(head,pos);
-
-    new->next=head->next;
-    head->next=new;
 }
 
 card* cardList_removeAfter(card* head, int pos) {
@@ -97,7 +98,7 @@ card* cardList_last(card* head) {
 }
 
 int cardList_length(card* list) {
-    int count;
+    int count=0;
     while(list!=NULL) {
         list=list->next;
         count++;
@@ -122,10 +123,11 @@ void cardList_shuffle(card** head, int iters) {
     }
 }
 
-void cardList_concat(card** head, card* tail) {
+void cardList_concat(card** head, card** tail) {
     if(*head==NULL) {
-        *head=tail;
+        *head=*tail;
     } else {
-        cardList_last(*head)->next=tail;
+        cardList_last(*head)->next=*tail;
+        *tail=NULL;
     }
 }
