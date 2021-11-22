@@ -26,6 +26,7 @@ Player* Player_create(char nameBuf[]) {
 
 void Player_destory(Player *p) {
     free(p->name);
+    cardList_teardown(p->hand);
     free(p);
 }
 
@@ -43,11 +44,7 @@ int Player_queryBet(Player *p) {
     do {
         printf("Place your bet (1-%d) coins (-1 to quit playing): ",p->money);
         scanf("%d",&output); clearSTDIN();
-        if(output==-1) {
-            printf("Goodbye %s\n",p->name);
-            exit(EXIT_SUCCESS);
-        }
-    } while(output<=0 || output>p->money);
+    } while(output<=-1 || output>p->money);
 
     return output;
 }
@@ -108,7 +105,7 @@ void Player_printHandLarge(Player *p) {
 
 }
 
-void Player_queryAndReplaceCards(Player *p,card **deck) {
+void Player_queryAndReplaceCards(Player *p,card **deck,card **discardPile) {
     int cardsToSwap[]={1,1,1,1,1};
     int cardsRemaining=5;
 
@@ -119,7 +116,7 @@ void Player_queryAndReplaceCards(Player *p,card **deck) {
 
         if(pickedCard==-1) break;
 
-        if(pickedCard<1 || pickedCard>5) continue;    
+        if(pickedCard<1 || pickedCard>5) continue;
 
         if(cardsToSwap[pickedCard-1]) {
             cardsToSwap[pickedCard-1]=0;
@@ -128,27 +125,5 @@ void Player_queryAndReplaceCards(Player *p,card **deck) {
     }
 
     for(int i=0; i<5; i++)
-        if(cardsToSwap[i]) replaceCard(&p->hand,deck,i);
-}
-
-void Player_updateMoneyAndPrint(Player *p,int bet) {
-    int handType=getHandType(p->hand);
-    int coinsToAdd=rankRewards[handType]*bet;
-        
-    p->money+=coinsToAdd;
-
-    if(coinsToAdd<0) {
-        printf(
-            "You LOST %d coins and you now have %d coins\n\n",
-            -coinsToAdd,
-            p->money
-        );
-    } else {
-        printf(
-            "You WON %d coins and you now have %d coins\n\n",
-            coinsToAdd,
-            p->money
-        );
-    }
-    
+        if(cardsToSwap[i]) replaceCard(&p->hand,deck,discardPile,i);
 }
