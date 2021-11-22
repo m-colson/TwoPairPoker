@@ -10,31 +10,30 @@
 
 #define strBuffer_Length 100
 
-int main(int argc, char** argv) {
-    card* deck=NULL;
-    card* discardPile=NULL;
+void checkStatFile(const char *filename) {
+    FILE* fileRead=fopen(filename,"r");
+    if(fileRead==NULL) {
+        FILE* fileWrite=fopen(filename,"w");
 
-    for(int i=0; i<52; i++)
-        cardList_unshift(&deck,card_create(i));
+        fprintf(fileWrite,"Player Name, Total Rounds, Rounds Won, Rounds Lost, ");
+        for(int i=1; i<9; i++)
+            fprintf(fileWrite,"Type %s, ",rankNames[i]);
 
-    if(argc<2) srand(time(0));
-    else srand(atoi(argv[1]));
+        fprintf(fileWrite,"\n");
 
-    cardList_shuffle(&deck,10000);
+        fclose(fileWrite);
+    } else {
+        fclose(fileRead);
+    }
+}
 
-    printf("Enter your name: ");
-
-    char strBuffer[strBuffer_Length];
-    scanLine(strBuffer,strBuffer_Length);
-
-    Player* player=Player_create(strBuffer);
-
+void printPrelude(char* playerName) {
     printRepeatGroup('$',9,5);
 
     printRepeat(' ',10);
     printRepeatGroup('$',9,3);
 
-    printf("%s,\n",player->name);
+    printf("%s,\n",playerName);
     printf("\tLet's player Two pairs or Better\n");
 
     printRepeat(' ',10);
@@ -62,17 +61,45 @@ int main(int argc, char** argv) {
     }
 
     printf("\n");
+}
+
+int main(int argc, char** argv) {
+    const char dataFileName[]="gamestats.csv";
+
+    card* deck=NULL;
+    card* discardPile=NULL;
+
+    for(int i=0; i<52; i++)
+        cardList_unshift(&deck,card_create(i));
+
+    if(argc<2) srand(time(0));
+    else srand(atoi(argv[1]));
+
+    printf("Enter your name: ");
+
+    char strBuffer[strBuffer_Length];
+    scanLine(strBuffer,strBuffer_Length);
+
+    Player* player=Player_create(strBuffer);
+
+    printPrelude(player->name);
+
+    int roundTotalCounts=0;
+    int roundRanksCounts[9];
+    for(int i=0; i<9; i++) roundRanksCounts[i]=0;
+
+    checkStatFile(dataFileName);
 
     while(player->money>0) {
-        if(cardList_length(deck)<=5) {
-            cardList_shuffle(&discardPile,10000);
-            cardList_concat(&deck,discardPile);
-        }
+        cardList_concat(&deck,&discardPile);
+        cardList_shuffle(&deck,10000);
 
         Player_printMoney(player);
         printf("\n");
 
         int bet=Player_queryBet(player);
+
+        if(bet==-1) break;
 
         printf("\nYou bet %d coins\n\n",bet);
 
@@ -80,21 +107,49 @@ int main(int argc, char** argv) {
 
         Player_printHandLarge(player);
 
-        Player_queryAndReplaceCards(player,&deck);
+        Player_queryAndReplaceCards(player,&deck,&discardPile);
         printf("\n");
 
         Player_printHandLarge(player);
 
-        Player_updateMoneyAndPrint(player,bet);
+        int roundRank=getHandType(player->hand);
 
-        cardList_concat(&discardPile,player->hand);
-        player->hand=NULL;
+        roundTotalCounts++;
+        roundRanksCounts[roundRank]++;
+
+        int coinsToAdd=rankRewards[roundRank]*bet;
+
+        player->money+=coinsToAdd;
+
+        printf(
+            "You %s %d coins and you now have %d coins\n\n",
+            (coinsToAdd<0) ? "LOST" : "WON",
+            (coinsToAdd<0) ? -coinsToAdd : coinsToAdd,
+            player->money
+        );
+
+        cardList_concat(&discardPile,&(player->hand));
 
         printf("Hit Enter key to continue: ");
-        scanf(""); clearSTDIN();
-        printf("\n");         
+        clearSTDIN();
+        printf("\n");
     }
 
-    Player_destory(player);
+    //Exit procedure
+    FILE* statFileAppend=fopen(dataFileName,"a");
+
+    fprintf(statFileAppend,
+        "%s, %d, %d, %d, ",
+        player->name,
+        roundTotalCounts,
+        roundTotalCounts-roundRanksCounts[0],
+        roundRanksCounts[0]
+    );
+
+    for(int i=1; i<9; i++)
+        fprintf(statFileAppend,"%d, ",roundRanksCounts[i]);
+
+    fprintf(statFileAppend,"\n");
+
     return EXIT_SUCCESS;
 }
