@@ -50,7 +50,7 @@ void replaceCard(card **hand, card** deck, card** discardPile,int pos) {
 char hasFlush(card *hand) {
     char cmpFace=hand->face;
 
-    for(int i=1; i<5; i++) {
+    for(int i=0; i<5; i++) {
         if(cmpFace!=hand->face) return 0;
         hand=hand->next;
     }
@@ -141,14 +141,14 @@ const char* rankNames[]={
 };
 
 const char* rankExamples[]={
-    " ",
-    "K♠ K♦ 6♦ 6♥  ■ ",
-    "9♠ 9♣ 9♦  ■  ■ ",
-    "4■ 5■ 6■ 7■ 8■ ",
-    "■♣ ■♣ ■♣ ■♣ ■♣ ",
-    "9♦ 9♥ 9♠ 3♣ 3♥ ",
-    "9♠ 9♣ 9♦ 9♥  ■ ",
-    "2♣ 3♣ 4♣ 5♣ 6♣ ",
+    "  ■  ■  ■  ■  ■",
+    " K♠ K♦ 6♦ 6♥  ■",
+    " 9♠ 9♣ 9♦  ■  ■",
+    " 4■ 5■ 6■ 7■ 8■",
+    " ■♣ ■♣ ■♣ ■♣ ■♣",
+    " 9♦ 9♥ 9♠ 3♣ 3♥",
+    " 9♠ 9♣ 9♦ 9♥  ■",
+    " 2♣ 3♣ 4♣ 5♣ 6♣",
     "10♠ J♠ Q♠ K♠ A♠"
 };
 
@@ -163,7 +163,6 @@ const int rankRewards[]={
     100,
     250
 };
-
 
 int getHandType(card* hand) {
     int counts[13];
@@ -190,25 +189,26 @@ int findCardsShouldHold(card *hand, int cardsShouldHold[5]) {
     int counts[13];
     generateCounts(hand,counts);
 
-    card* tempHand;
-
     if(hasStraight(counts) || hasFlush(hand) || hasFullHouse(counts)) {
         for(int i=0; i<5; i++) cardsShouldHold[i]=1;
-    } else {
-        for(int c=0; c<13; c++) {
-            if(counts[c]<2) continue;
-            tempHand=hand;
-            for(int i=0; i<5; i++) {
-                if(tempHand->value==c+1) {
-                    cardsShouldHold[i]=1; 
-                    cardsHoldAmount++;
-                }
-                tempHand=tempHand->next;
+        return 5;
+    }
+
+    card* tempHand;
+
+    for(int c=0; c<13; c++) {
+        if(counts[c]<2) continue;
+        tempHand=hand;
+        for(int i=0; i<5; i++) {
+            if(tempHand->value==c+1) {
+                cardsShouldHold[i]=1;
+                cardsHoldAmount++;
             }
+            tempHand=tempHand->next;
         }
     }
 
-    return cardsHoldAmount;
+   return cardsHoldAmount;
 }
 
 char* createHandSuggestionStr(card *hand) {
