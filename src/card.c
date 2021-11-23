@@ -128,6 +128,6 @@ void cardList_concat(card** head, card** tail) {
         *head=*tail;
     } else {
         cardList_last(*head)->next=*tail;
-        *tail=NULL;
     }
+    *tail=NULL;
 }
