@@ -44,7 +44,8 @@ int Player_queryBet(Player *p) {
     do {
         printf("Place your bet (1-%I64d) coins (-1 to quit playing): ",p->money);
         scanf("%d",&output); clearSTDIN();
-    } while(output<=-1 || output>p->money);
+        if(output==-1) break;
+    } while(output<1 || output>p->money);
 
     return output;
 }
