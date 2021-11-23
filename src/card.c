@@ -34,6 +34,9 @@ void card_print(card* c) {
         case 11:
             printf("J");
             break;
+        case 1:
+            printf("A");
+            break;
         default:
             printf("%d",c->value);
             break;
