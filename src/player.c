@@ -9,7 +9,7 @@
 
 typedef struct Player_struct {
     char *name;
-    int money;
+    long long int money;
     card *hand;
 } Player;
 
@@ -33,7 +33,7 @@ void Player_destory(Player *p) {
 void Player_printMoney(Player *p) {
     printRepeatGroup('*',9,5);
     printRepeat('*',5);
-    printf(" %s, you have %d coins\t    ",p->name,p->money);
+    printf(" %s, you have %I64d coins\t    ",p->name,p->money);
     printRepeat('*',5);
     printf("\n");
     printRepeatGroup('*',9,5);
@@ -42,7 +42,7 @@ void Player_printMoney(Player *p) {
 int Player_queryBet(Player *p) {
     int output;
     do {
-        printf("Place your bet (1-%d) coins (-1 to quit playing): ",p->money);
+        printf("Place your bet (1-%I64d) coins (-1 to quit playing): ",p->money);
         scanf("%d",&output); clearSTDIN();
     } while(output<=-1 || output>p->money);
 
@@ -105,25 +105,7 @@ void Player_printHandLarge(Player *p) {
 
 }
 
-void Player_queryAndReplaceCards(Player *p,card **deck,card **discardPile) {
-    int cardsToSwap[]={1,1,1,1,1};
-    int cardsRemaining=5;
-
-    int pickedCard;
-    while(cardsRemaining) {
-        printf("Pick cards (between 1-5) to hold (-1 to stop): ");
-        scanf("%d",&pickedCard); clearSTDIN();
-
-        if(pickedCard==-1) break;
-
-        if(pickedCard<1 || pickedCard>5) continue;
-
-        if(cardsToSwap[pickedCard-1]) {
-            cardsToSwap[pickedCard-1]=0;
-            cardsRemaining--;
-        }
-    }
-
+void Player_replaceCards(Player *p,card **deck,card **discardPile,int cardToHold[5]) {
     for(int i=0; i<5; i++)
-        if(cardsToSwap[i]) replaceCard(&p->hand,deck,discardPile,i);
+        if(!cardToHold[i]) replaceCard(&p->hand,deck,discardPile,i);
 }
