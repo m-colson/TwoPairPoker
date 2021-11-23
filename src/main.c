@@ -83,6 +83,8 @@ void queryReplacements(int cardsToReplace[5]) {
     }
 }
 
+#define AUTOPLAY
+
 int main(int argc, char** argv) {
     const char dataFileName[]="gamestats.csv";
 
@@ -114,7 +116,7 @@ int main(int argc, char** argv) {
 
     checkStatFile(dataFileName);
 
-    while(player->money>0) {
+    while(1) {
         cardList_concat(&deck,&discardPile);
         cardList_shuffle(&deck,10000);
 
@@ -139,10 +141,10 @@ int main(int argc, char** argv) {
         #ifdef AUTOPLAY
             findCardsShouldHold(player->hand,cardsToHold);
         #else
-            char* suggestion=createHandSuggestion(player->hand);
+            char* suggestion=createHandSuggestionStr(player->hand);
             printf("::|| %s\n",suggestion);
             free(suggestion);
-            queryHolds(cardsToHold);
+            queryReplacements(cardsToHold);
         #endif
 
         printf("\n");
@@ -169,6 +171,11 @@ int main(int argc, char** argv) {
 
         cardList_concat(&discardPile,&(player->hand));
 
+        if(player->money<=0) {
+            printf("You lost all your coins. Game over!\n");
+            break;
+        }
+
         printf("Hit Enter key to continue: ");
         #ifndef AUTOPLAY
             clearSTDIN();
@@ -180,18 +187,25 @@ int main(int argc, char** argv) {
     FILE* statFileAppend=fopen(dataFileName,"a");
 
     fprintf(statFileAppend,
-        "%d, %s, %d, %d, %d, ",
+        "%d, %s, %d, %d, ",
         randSeed,
         player->name,
         roundTotalCounts,
-        roundTotalCounts-roundRanksCounts[0],
-        roundRanksCounts[0]
+        roundTotalCounts-roundRanksCounts[0]
     );
 
-    for(int i=1; i<9; i++)
+    for(int i=0; i<9; i++)
         fprintf(statFileAppend,"%d, ",roundRanksCounts[i]);
 
     fprintf(statFileAppend,"\n");
+
+    fclose(statFileAppend);
+
+    printf("Goodbye %s\n",player->name);
+
+    cardList_teardown(deck);
+    cardList_teardown(discardPile);
+    Player_destory(player);
 
     return EXIT_SUCCESS;
 }
