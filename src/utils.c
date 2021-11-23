@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <string.h>
 
 int randBetween(int min,int max) {
@@ -29,4 +29,12 @@ void printRepeatGroup(char c, int groupsize, int groups) {
         printf(" ");
     }
     printf("\n");
+}
+
+int max_ints(int a,int b) {
+    return a>b ? a : b;
+}
+
+int min_ints(int a,int b) {
+    return a<b ? a : b;
 }
