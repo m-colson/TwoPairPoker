@@ -183,3 +183,55 @@ int getHandType(card* hand) {
     return 0;
 }
 
+int findCardsShouldHold(card *hand, int cardsShouldHold[5]) {
+    for(int i=0; i<5; i++) cardsShouldHold[i]=0;
+    int cardsHoldAmount=0;
+
+    int counts[13];
+    generateCounts(hand,counts);
+
+    card* tempHand;
+
+    if(hasStraight(counts) || hasFlush(hand) || hasFullHouse(counts)) {
+        for(int i=0; i<5; i++) cardsShouldHold[i]=1;
+    } else {
+        for(int c=0; c<13; c++) {
+            if(counts[c]<2) continue;
+            tempHand=hand;
+            for(int i=0; i<5; i++) {
+                if(tempHand->value==c+1) {
+                    cardsShouldHold[i]=1; 
+                    cardsHoldAmount++;
+                }
+                tempHand=tempHand->next;
+            }
+        }
+    }
+
+    return cardsHoldAmount;
+}
+
+char* createHandSuggestionStr(card *hand) {
+    int cardsShouldHold[5];
+
+    int cardsHoldAmount=findCardsShouldHold(hand,cardsShouldHold);
+
+    char suggestionBuffer[100];
+    char *buildPointer=suggestionBuffer;
+
+    if(cardsHoldAmount==0) {
+        strcpy(suggestionBuffer,"No suggestions");
+    } else if(cardsHoldAmount==5) {
+        strcpy(suggestionBuffer,"Hold All");
+    } else {
+        buildPointer+=sprintf(buildPointer,"Hold ");
+        for(int i=0; i<5; i++) {
+            if(cardsShouldHold[i])
+                buildPointer+=sprintf(buildPointer,"%d, ",i+1);
+        }
+    }
+    
+    char * outputStr=malloc(sizeof(char)*(strlen(suggestionBuffer)+1));
+    strcpy(outputStr,suggestionBuffer);
+    return outputStr;
+}
