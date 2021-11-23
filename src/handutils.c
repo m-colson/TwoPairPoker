@@ -189,7 +189,7 @@ int findCardsShouldHold(card *hand, int cardsShouldHold[5]) {
     int counts[13];
     generateCounts(hand,counts);
 
-    if(hasStraight(counts) || hasFlush(hand) || hasFullHouse(counts)) {
+    if(hasStraight(counts) || hasFlush(hand)) {
         for(int i=0; i<5; i++) cardsShouldHold[i]=1;
         return 5;
     }
@@ -213,7 +213,6 @@ int findCardsShouldHold(card *hand, int cardsShouldHold[5]) {
 
 char* createHandSuggestionStr(card *hand) {
     int cardsShouldHold[5];
-
     int cardsHoldAmount=findCardsShouldHold(hand,cardsShouldHold);
 
     char suggestionBuffer[100];
@@ -224,10 +223,10 @@ char* createHandSuggestionStr(card *hand) {
     } else if(cardsHoldAmount==5) {
         strcpy(suggestionBuffer,"Hold All");
     } else {
-        buildPointer+=sprintf(buildPointer,"Hold ");
+        buildPointer+=sprintf(buildPointer,"Hold");
         for(int i=0; i<5; i++) {
             if(cardsShouldHold[i])
-                buildPointer+=sprintf(buildPointer,"%d, ",i+1);
+                buildPointer+=sprintf(buildPointer," %d",i+1);
         }
     }
     
