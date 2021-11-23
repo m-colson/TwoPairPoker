@@ -15,7 +15,7 @@ void checkStatFile(const char *filename) {
     if(fileRead==NULL) {
         FILE* fileWrite=fopen(filename,"w");
 
-        fprintf(fileWrite,"Player Name, Total Rounds, Rounds Won, Rounds Lost, ");
+        fprintf(fileWrite,"Game Seed, Player Name, Total Rounds, Rounds Won, Rounds Lost, ");
         for(int i=1; i<9; i++)
             fprintf(fileWrite,"Type %s, ",rankNames[i]);
 
@@ -63,6 +63,26 @@ void printPrelude(char* playerName) {
     printf("\n");
 }
 
+void queryReplacements(int cardsToReplace[5]) {
+    for(int i=0; i<5; i++) cardsToReplace[i]=1;
+    int cardsRemaining=5;
+
+    int pickedCard;
+    while(cardsRemaining) {
+        printf("Pick cards (between 1-5) to hold (-1 to stop): ");
+        scanf("%d",&pickedCard); clearSTDIN();
+
+        if(pickedCard==-1) break;
+
+        if(pickedCard<1 || pickedCard>5) continue;
+
+        if(!cardsToReplace[pickedCard-1]) {
+            cardsToReplace[pickedCard-1]=0;
+            cardsRemaining--;
+        }
+    }
+}
+
 int main(int argc, char** argv) {
     const char dataFileName[]="gamestats.csv";
 
@@ -72,8 +92,12 @@ int main(int argc, char** argv) {
     for(int i=0; i<52; i++)
         cardList_unshift(&deck,card_create(i));
 
-    if(argc<2) srand(time(0));
-    else srand(atoi(argv[1]));
+    int randSeed;
+
+    if(argc<2) randSeed=time(0);
+    else randSeed=atoi(argv[1]);
+
+    srand(randSeed);
 
     printf("Enter your name: ");
 
@@ -97,7 +121,11 @@ int main(int argc, char** argv) {
         Player_printMoney(player);
         printf("\n");
 
-        int bet=Player_queryBet(player);
+        #ifdef AUTOPLAY
+            int bet=max_ints((player->money/5),min_ints(10,player->money));
+        #else
+            int bet=Player_queryBet(player);
+        #endif
 
         if(bet==-1) break;
 
@@ -107,8 +135,19 @@ int main(int argc, char** argv) {
 
         Player_printHandLarge(player);
 
-        Player_queryAndReplaceCards(player,&deck,&discardPile);
+        int cardsToHold[5];
+        #ifdef AUTOPLAY
+            findCardsShouldHold(player->hand,cardsToHold);
+        #else
+            char* suggestion=createHandSuggestion(player->hand);
+            printf("::|| %s\n",suggestion);
+            free(suggestion);
+            queryHolds(cardsToHold);
+        #endif
+
         printf("\n");
+    
+        Player_replaceCards(player,&deck,&discardPile,cardsToHold);
 
         Player_printHandLarge(player);
 
@@ -117,12 +156,12 @@ int main(int argc, char** argv) {
         roundTotalCounts++;
         roundRanksCounts[roundRank]++;
 
-        int coinsToAdd=rankRewards[roundRank]*bet;
+        long long int coinsToAdd=rankRewards[roundRank]*bet;
 
         player->money+=coinsToAdd;
 
         printf(
-            "You %s %d coins and you now have %d coins\n\n",
+            "You %s %I64d coins and you now have %I64d coins\n\n",
             (coinsToAdd<0) ? "LOST" : "WON",
             (coinsToAdd<0) ? -coinsToAdd : coinsToAdd,
             player->money
@@ -131,7 +170,9 @@ int main(int argc, char** argv) {
         cardList_concat(&discardPile,&(player->hand));
 
         printf("Hit Enter key to continue: ");
-        clearSTDIN();
+        #ifndef AUTOPLAY
+            clearSTDIN();
+        #endif
         printf("\n");
     }
 
@@ -139,7 +180,8 @@ int main(int argc, char** argv) {
     FILE* statFileAppend=fopen(dataFileName,"a");
 
     fprintf(statFileAppend,
-        "%s, %d, %d, %d, ",
+        "%d, %s, %d, %d, %d, ",
+        randSeed,
         player->name,
         roundTotalCounts,
         roundTotalCounts-roundRanksCounts[0],
