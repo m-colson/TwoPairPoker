@@ -48,10 +48,10 @@ void card_print(card* c) {
     }
     switch(c->face) {
         #ifdef SUITS
-            case 's': printf("♠"); break;
-            case 'c': printf("♣"); break;
-            case 'h': printf("♥"); break;
-            case 'd': printf("♦"); break;
+            case 's': printf("\x06"); break;
+            case 'c': printf("\x05"); break;
+            case 'h': printf("\x03"); break;
+            case 'd': printf("\x04"); break;
         #else
             case 's': printf("s"); break;
             case 'c': printf("c"); break;

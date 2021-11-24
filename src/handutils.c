@@ -183,15 +183,15 @@ const char* rankNames[]={
  * @brief examples of all ranks in two pair or better poker based on rank number
  */
 const char* rankExamples[]={
-    "  ■  ■  ■  ■  ■",
-    " K♠ K♦ 6♦ 6♥  ■",
-    " 9♠ 9♣ 9♦  ■  ■",
-    " 4■ 5■ 6■ 7■ 8■",
-    " ■♣ ■♣ ■♣ ■♣ ■♣",
-    " 9♦ 9♥ 9♠ 3♣ 3♥",
-    " 9♠ 9♣ 9♦ 9♥  ■",
-    " 2♣ 3♣ 4♣ 5♣ 6♣",
-    "10♠ J♠ Q♠ K♠ A♠"
+    "  \xfe  \xfe  \xfe  \xfe  \xfe",
+    " K\x06 K\x04 6\x04 6\x03  \xfe",
+    " 9\x06 9\x05 9\x04  \xfe  \xfe",
+    " 4\xfe 5\xfe 6\xfe 7\xfe 8\xfe",
+    " \xfe\x05 \xfe\x05 \xfe\x05 \xfe\x05 \xfe\x05",
+    " 9\x04 9\x03 9\x06 3\x05 3\x03",
+    " 9\x06 9\x05 9\x04 9\x03  \xfe",
+    " 2\x05 3\x05 4\x05 5\x05 6\x05",
+    "10\x06 J\x06 Q\x06 K\x06 A\x06"
 };
 
 /**
