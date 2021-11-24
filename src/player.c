@@ -26,6 +26,7 @@ Player* Player_create(char nameBuf[]) {
     strcpy(output->name,nameBuf);
 
     output->money=100;
+    output->hand=NULL;
 
     return output;
 }
