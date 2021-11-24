@@ -13,6 +13,12 @@ typedef struct Player_struct {
     card *hand;
 } Player;
 
+/**
+ * @brief returns a new player with a new 
+ * 
+ * @param nameBuf 
+ */
+
 Player* Player_create(char nameBuf[]) {
     Player* output=(Player*)malloc(sizeof(Player));
 

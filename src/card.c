@@ -19,10 +19,15 @@ card* card_create(int cardValue) {
     return output;
 }
 
-void card_destroy(card* n) {
-    free(n);
+void card_destroy(card* c) {
+    free(c);
 }
 
+/**
+ * @brief prints a card formatted like a poker card
+ * 
+ * @param c the card to print 
+ */
 void card_print(card* c) {
     switch(c->value) {
         case 13:
@@ -59,6 +64,11 @@ void card_print(card* c) {
     }
 }
 
+/**
+ * @brief destroys all the cards in a card list
+ * 
+ * @param head the start of the list
+ */
 void cardList_teardown(card *head) {
     card *next;
     while(head!=NULL) {
@@ -68,22 +78,45 @@ void cardList_teardown(card *head) {
     }
 }
 
+/**
+ * @brief returns a pointer to the numth element in the card list
+ * 
+ * @param head the start of the list
+ * @param num the position to get the card
+ */
 card *cardList_get(card* head, int num) {
     for(int i=0; i<num; i++) head=head->next;
     return head;
 }
 
+/**
+ * @brief adds a new element to the front of the card list
+ * 
+ * @param head a pointer to the start of the list
+ * @param new the new element to add
+ */
 void cardList_unshift(card** head, card* new) {
     new->next=*head;
     *head=new;
 }
 
+/**
+ * @brief removes and return the first element from a card list
+ * 
+ * @param head a pointer to the start of the list
+ */
 card* cardList_shift(card** head) {
     card* output=*head;
     *head=(*head)->next;
     return output;
 }
 
+/**
+ * @brief removes and returns an element from the array after the position
+ * 
+ * @param head the start of the list 
+ * @param pos the position of the element before the element to remove
+ */
 card* cardList_removeAfter(card* head, int pos) {
     head=cardList_get(head,pos);
 
@@ -93,6 +126,11 @@ card* cardList_removeAfter(card* head, int pos) {
     return output;
 }
 
+/**
+ * @brief returns a pointer to the last element in the card list
+ * 
+ * @param head the start of the card list
+ */
 card* cardList_last(card* head) {
     while(head->next!=NULL) {
         head=head->next;
@@ -100,6 +138,11 @@ card* cardList_last(card* head) {
     return head; 
 }
 
+/**
+ * @brief returns the number of elements in the card list
+ * 
+ * @param list the start of the card list
+ */
 int cardList_length(card* list) {
     int count=0;
     while(list!=NULL) {
@@ -109,6 +152,11 @@ int cardList_length(card* list) {
     return count;
 }
 
+/**
+ * @brief prints the elements of a card list with a newline
+ * 
+ * @param list the start of the card list
+ */
 void cardList_print(card* list) {
     while(list!=NULL) {
         card_print(list);
@@ -118,6 +166,12 @@ void cardList_print(card* list) {
     printf("\n");
 }
 
+/**
+ * @brief shuffles a card list by removing random elements from list add adding them to the front
+ * 
+ * @param head a pointer to the start of the list
+ * @param iters the amount of times to repeat the procedure
+ */
 void cardList_shuffle(card** head, int iters) {
     int head_length=cardList_length(*head);
     for(int i=0; i<iters; i++) {
@@ -126,6 +180,9 @@ void cardList_shuffle(card** head, int iters) {
     }
 }
 
+/**
+ * @brief adds tail to the end of head and makes tail null
+ */
 void cardList_concat(card** head, card** tail) {
     if(*head==NULL) {
         *head=*tail;

@@ -58,6 +58,12 @@ char hasFlush(card *hand) {
     return cmpFace;
 }
 
+/**
+ * @brief Generates a array with the counts of the card values in the hand
+ * 
+ * @param hand hand to count the card values in
+ * @param counts array to write to
+ */
 void generateCounts(card *hand, int counts[13]) {
     for(int i=0; i<13; i++) counts[i]=0;
 
@@ -67,6 +73,12 @@ void generateCounts(card *hand, int counts[13]) {
     }
 }
 
+/**
+ * @brief checks a count array for a straight
+ * 
+ * @param counts array from generateCounts()
+ * @return the value of the highest card in the straight or zero
+ */
 int hasStraight(int counts[13]) {
     int consecCounter=0;
     for(int i=0; i<14; i++) {
@@ -81,6 +93,12 @@ int hasStraight(int counts[13]) {
     return 0;
 }
 
+/**
+ * @brief checks a count array for three of a kind
+ * 
+ * @param counts array from generateCounts()
+ * @return the value of the card used in the three of a kind or zero
+ */
 int hasThreeOfKind(int counts[13]) {
     for(int i=0; i<13; i++)
         if(counts[i]==3) return i+1;
@@ -88,6 +106,12 @@ int hasThreeOfKind(int counts[13]) {
     return 0;
 }
 
+/**
+ * @brief checks a count array for four of a kind
+ * 
+ * @param counts array from generateCounts()
+ * @return the value of the card used in the four of a kind or zero
+ */
 int hasFourOfKind(int counts[13]) {
     for(int i=0; i<13; i++)
         if(counts[i]==4) return i+1;
@@ -95,6 +119,12 @@ int hasFourOfKind(int counts[13]) {
     return 0;
 }
 
+/**
+ * @brief checks a count array for two pair
+ * 
+ * @param counts array from generateCounts()
+ * @return 1 if has two pair otherwise 0
+ */
 int hasTwoPair(int counts[13]) {
     int valueOf2first=0;
     int valueOf2second=0;
@@ -114,6 +144,12 @@ int hasTwoPair(int counts[13]) {
     return 0;
 }
 
+/**
+ * @brief checks a count array for a full house
+ * 
+ * @param counts array from generateCounts()
+ * @return 1 if has a full house otherwise 0
+ */
 int hasFullHouse(int counts[13]) {
     int valueOf3=0;
     int valueOf2=0;
@@ -128,6 +164,9 @@ int hasFullHouse(int counts[13]) {
     return 0;
 }
 
+/**
+ * @brief names of all ranks in two pair or better poker based on rank number
+ */
 const char* rankNames[]={
     "None",
     "Two Pair",
@@ -140,6 +179,9 @@ const char* rankNames[]={
     "Royal Flush"
 };
 
+/**
+ * @brief examples of all ranks in two pair or better poker based on rank number
+ */
 const char* rankExamples[]={
     "  ■  ■  ■  ■  ■",
     " K♠ K♦ 6♦ 6♥  ■",
@@ -152,6 +194,9 @@ const char* rankExamples[]={
     "10♠ J♠ Q♠ K♠ A♠"
 };
 
+/**
+ * @brief rewards of all ranks in two pair or better poker based on rank number
+ */
 const int rankRewards[]={
     -1,
     2,
@@ -164,6 +209,12 @@ const int rankRewards[]={
     250
 };
 
+/**
+ * @brief determines the rank number of a hand
+ * 
+ * @param hand the hand to test
+ * @return the rank number of the hand
+ */
 int getHandType(card* hand) {
     int counts[13];
     generateCounts(hand,counts);
@@ -182,6 +233,13 @@ int getHandType(card* hand) {
     return 0;
 }
 
+/**
+ * @brief determines what cards the player should hold
+ * 
+ * @param hand the hand to use
+ * @param cardsShouldHold an array to store if the position should be held
+ * @return the amount of cards that were held
+ */
 int findCardsShouldHold(card *hand, int cardsShouldHold[5]) {
     for(int i=0; i<5; i++) cardsShouldHold[i]=0;
     int cardsHoldAmount=0;
@@ -211,6 +269,12 @@ int findCardsShouldHold(card *hand, int cardsShouldHold[5]) {
    return cardsHoldAmount;
 }
 
+/**
+ * @brief Creates a suggestion string based on findCardsShouldHold()
+ * 
+ * @param hand the hand to use
+ * @return the string created (with malloc)
+ */
 char* createHandSuggestionStr(card *hand) {
     int cardsShouldHold[5];
     int cardsHoldAmount=findCardsShouldHold(hand,cardsShouldHold);
