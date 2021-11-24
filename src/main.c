@@ -83,7 +83,7 @@ void queryReplacements(int cardsToReplace[5]) {
     }
 }
 
-#define AUTOPLAY
+//#define AUTOPLAY
 
 int main(int argc, char** argv) {
     const char dataFileName[]="gamestats.csv";
