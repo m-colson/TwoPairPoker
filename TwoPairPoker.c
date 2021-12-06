@@ -118,6 +118,15 @@ int min_ints(int a, int b) {
     return a < b ? a : b;
 }
 
+void* xmalloc(int bytes) {
+    void* output = malloc(bytes);
+    if (output == NULL) {
+        fprintf(stderr, "FATAL: Out of memory");
+        exit(EXIT_FAILURE);
+    }
+    return output;
+}
+
 const char cardSuits[] = "cshd";
 
 typedef struct card_s {
@@ -127,7 +136,7 @@ typedef struct card_s {
 } card;
 
 card* card_create(int cardValue) {
-    card* output = (card*)malloc(sizeof(card));
+    card* output = (card*)xmalloc(sizeof(card));
 
     output->value = cardValue % 13 + 1;
     output->face = cardSuits[cardValue / 13];
@@ -539,7 +548,7 @@ int findCardsShouldHold(card* hand, int cardsShouldHold[5]) {
  * @brief Creates a suggestion string based on findCardsShouldHold()
  *
  * @param hand the hand to use
- * @return the string created (with malloc)
+ * @return the string created (with )
  */
 char* createHandSuggestionStr(card* hand) {
     int cardsShouldHold[5];
@@ -562,8 +571,9 @@ char* createHandSuggestionStr(card* hand) {
         }
     }
 
-    char* outputStr = malloc(sizeof(char) * (strlen(suggestionBuffer) + 1));
+    char* outputStr = xmalloc(sizeof(char) * (strlen(suggestionBuffer) + 1));
     strcpy(outputStr, suggestionBuffer);
+
     return outputStr;
 }
 
@@ -580,10 +590,10 @@ typedef struct Player_struct {
  */
 
 Player* Player_create(char nameBuf[]) {
-    Player* output = (Player*)malloc(sizeof(Player));
+    Player* output = (Player*)xmalloc(sizeof(Player));
     output->hand = NULL;
 
-    output->name = (char*)malloc(sizeof(char) * (strlen(nameBuf) + 1));
+    output->name = (char*)xmalloc(sizeof(char) * (strlen(nameBuf) + 1));
     strcpy(output->name, nameBuf);
 
     output->money = 100;
@@ -623,8 +633,6 @@ void Player_printHand(Player* p) {
 }
 
 void Player_printHandLarge(Player* p) {
-    
-
     int cards_length = cardList_length(p->hand);
 
     printf("%s's hand: (%s)\n", p->name, rankNames[getHandType(p->hand)]);
@@ -736,8 +744,8 @@ void printPrelude(char* playerName) {
     printf("\n");
 }
 
-void queryReplacements(int cardsToReplace[5]) {
-    for (int i = 0; i < 5; i++) cardsToReplace[i] = 1;
+void queryReplacements(int cardsToHold[5]) {
+    for (int i = 0; i < 5; i++) cardsToHold[i] = 0;
     int cardsRemaining = 5;
 
     int pickedCard;
@@ -749,8 +757,8 @@ void queryReplacements(int cardsToReplace[5]) {
 
         if (pickedCard < 1 || pickedCard>5) continue;
 
-        if (!cardsToReplace[pickedCard - 1]) {
-            cardsToReplace[pickedCard - 1] = 0;
+        if (!cardsToHold[pickedCard - 1]) {
+            cardsToHold[pickedCard - 1] = 1;
             cardsRemaining--;
         }
     }
@@ -831,7 +839,7 @@ int main(int argc, char** argv) {
         roundTotalCounts++;
         roundRanksCounts[roundRank]++;
 
-        long long int coinsToAdd = rankRewards[roundRank] * bet;
+        long long int coinsToAdd = rankRewards[roundRank] * (long long int)bet;
 
         player->money += coinsToAdd;
 
